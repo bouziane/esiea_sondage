@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "383280628738",
+    "project_id": "sondage-3c953",
+    "storage_bucket": "sondage-3c953.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383280628738:android:02e7edccb3a4a0b2f9d31b",
+        "android_client_info": {
+          "package_name": "com.sondage.flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBWfHheaCVnOaXtYsPW8wbRAIUaNAXb3M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
