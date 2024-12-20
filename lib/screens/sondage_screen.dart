@@ -1,6 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sondage/vote_bloc/vote_blocs.dart';
+import 'package:sondage/vote_bloc/vote_events.dart';
+import 'package:sondage/vote_bloc/vote_states.dart';
 
 class SondageScreen extends StatelessWidget {
   const SondageScreen({super.key});
@@ -9,28 +12,64 @@ class SondageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(96.0),
+        padding: const EdgeInsets.all(96.0),
         child: Column(
           children: [
             ElevatedButton(
               onPressed: () {
-                vote("Windows");
+                context.read<VoteBlocs>().add(PostVotes("windows"));
               },
               child: Row(
                 children: [
-                  Icon(Icons.window),
-                  Text('Windows'),
+                  const Expanded( 
+                    flex: 1, 
+                    child: Row(
+                      children: [
+                        Icon(Icons.window),
+                        Text('Windows'),
+                      ],
+                    ),
+                  ),
+                  BlocBuilder<VoteBlocs, VotesState>(
+                    builder: (context, state) {
+                      if (state is VotesInitial || state is VotesLoading) {
+                        return const CircularProgressIndicator();
+
+                      } else if (state is VotesLoaded) {
+                        return Text('${state.votes.getWindowsPercent()} %');
+                      }
+                      return Container();
+                    },
+                  )
                 ],
-              ),
+              )
             ),
             ElevatedButton(
               onPressed: () {
-                vote("Apple");
+                context.read<VoteBlocs>().add(PostVotes("apple"));
               },
               child: Row(
                 children: [
-                  Icon(Icons.apple),
-                  Text('Apple'),
+                  const Expanded( 
+                    flex: 1, 
+                    child: Row(
+                      children: [
+                        Icon(Icons.apple),
+                        Text('Apple'),
+                      ],
+                    ),
+                  ),
+                  BlocBuilder<VoteBlocs, VotesState>(
+                    builder: (context, state) {
+                      if (state is VotesInitial || state is VotesLoading) {
+                        return const CircularProgressIndicator();
+
+                      } else if (state is VotesLoaded) {
+                        return Text('${state.votes.getApplePercent()} %');
+                      }
+                      return Container();
+                    },
+                  )
                 ],
               ),
             ),
@@ -38,27 +77,11 @@ class SondageScreen extends StatelessWidget {
               onPressed: () async {
                 await FirebaseAuth.instance.signOut();
               },
-              child: Text('Déconnexion'),
+              child: const Text('Déconnexion'),
             )
           ],
         ),
       ),
     );
-  }
-
-  Future vote(String selection) async {
-    FirebaseFirestore db = FirebaseFirestore.instance;
-    CollectionReference collection = db.collection("sondage");
-    QuerySnapshot snapshot = await collection.get();
-    List<QueryDocumentSnapshot> list = snapshot.docs;
-    DocumentSnapshot document = list.first;
-    final id = document.id;
-    if (selection == "Windows") {
-      int windowsVotes = document.get('windows');
-      collection.doc(id).update({"windows": ++windowsVotes});
-    } else if (selection == "Apple") {
-      int appleVotes = document.get('apple');
-      collection.doc(id).update({"apple": ++appleVotes});
-    }
   }
 }
